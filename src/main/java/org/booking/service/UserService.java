@@ -14,9 +14,9 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public User add(String username) {
+    public User create(String name) {
         User user = User.builder()
-                .name(username)
+                .name(name)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
