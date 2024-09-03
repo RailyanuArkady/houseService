@@ -8,6 +8,8 @@ import org.booking.repository.HouseRepository;
 import org.booking.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,13 +20,13 @@ public class HouseService {
     private final UserRepository userRepository;
 
     @Transactional
-    public House createHouse(Long id, String address, Integer square) {
+    public House createHouse(Long id, String address, BigDecimal area) {
         User user = userRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("Could not find user with id: " + id));
         House house = House.builder()
                 .user(user)
                 .address(address)
-                .square(square)
+                .area(area)
                 .build();
 
         House savedHouse = houseRepository.save(house);
@@ -39,7 +41,7 @@ public class HouseService {
         House house = houseRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Could not find house with id: " + id));
         house.setAddress(updatedHouse.getAddress());
-        house.setSquare(updatedHouse.getSquare());
+        house.setArea(updatedHouse.getArea());
         return houseRepository.save(house);
     }
 
@@ -47,5 +49,10 @@ public class HouseService {
         House houseToBeDeleted = houseRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Could not find house with id: " + id));
         houseRepository.delete(houseToBeDeleted);
+    }
+
+    public List<House> getAllHouses() {
+        List<House> houses = houseRepository.findAll();
+        return houses;
     }
 }

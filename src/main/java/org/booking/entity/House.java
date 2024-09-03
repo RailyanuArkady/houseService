@@ -15,6 +15,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
@@ -33,7 +35,7 @@ public class House {
     private User user;
     @Column(name = "address")
     private String address;
-    @Column(name = "square")
-    private Integer square;
+    @Column(name = "area", precision = 10, scale = 2)
+    private BigDecimal area;
 
 }
