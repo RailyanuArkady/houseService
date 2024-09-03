@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -30,6 +31,9 @@ public class House {
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "house_id_seq")
     @SequenceGenerator(name = "house_id_seq", allocationSize = 1)
     private Long id;
+
+    @Column(nullable = false)
+    private UUID externalHouseId;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private User user;

@@ -2,8 +2,11 @@ package org.booking.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.booking.dto.request.RequestHouseDto;
+import org.booking.dto.response.ResponseHouseDto;
 import org.booking.entity.House;
 import org.booking.entity.User;
+import org.booking.mapper.HouseMapper;
 import org.booking.repository.HouseRepository;
 import org.booking.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -11,26 +14,24 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class HouseService {
 
-    private final HouseRepository houseRepository;
+    private final HouseMapper houseMapper;
     private final UserRepository userRepository;
+    private final HouseRepository houseRepository;
+
 
     @Transactional
-    public House createHouse(Long id, String address, BigDecimal area) {
-        User user = userRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("Could not find user with id: " + id));
-        House house = House.builder()
-                .user(user)
-                .address(address)
-                .area(area)
-                .build();
+    public ResponseHouseDto createHouse(RequestHouseDto requestHouseDto, UUID externalUserId) {
+        User user = userRepository.findByExternalUserId(externalUserId).orElseThrow(() ->
+                new IllegalArgumentException("Could not find user with external id: " + externalUserId));
 
-        House savedHouse = houseRepository.save(house);
-        return savedHouse;
+        House savedHouse = houseRepository.save(houseMapper.fromRequestToHouse(requestHouseDto, user));
+        return houseMapper.toResponseHouseDto(savedHouse);
     }
 
     public Optional<House> getHouseById(Long id) {
@@ -51,8 +52,10 @@ public class HouseService {
         houseRepository.delete(houseToBeDeleted);
     }
 
-    public List<House> getAllHouses() {
+    public List<ResponseHouseDto> getAllHouses() {
         List<House> houses = houseRepository.findAll();
-        return houses;
+        return houses.stream()
+                .map(houseMapper::toResponseHouseDto)
+                .toList();
     }
 }

@@ -1,6 +1,8 @@
 package org.booking.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.booking.dto.request.RequestHouseDto;
+import org.booking.dto.response.ResponseHouseDto;
 import org.booking.entity.House;
 import org.booking.service.HouseService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,19 +24,19 @@ public class HouseController {
     private final HouseService houseService;
 
     @PostMapping("/create")
-    public House create(@RequestParam("user_id") Long id, @RequestParam("address") String address,
-                        @RequestParam("area") BigDecimal area) {
-        return houseService.createHouse(id, address, area);
+    public ResponseHouseDto create(@RequestBody RequestHouseDto requestHouseDto,
+                                   @RequestParam("extUserId") UUID externalUserId) {
+        return houseService.createHouse(requestHouseDto, externalUserId);
     }
 
     @PostMapping("/update")
-    public House update(@RequestParam("house_id") Long id,
+    public House update(@RequestParam("houseId") Long id,
                         @RequestBody() House house) {
         return houseService.updateHouseById(id, house);
     }
 
     @GetMapping
-    public List<House> getAll() {
+    public List<ResponseHouseDto> getAll() {
         return houseService.getAllHouses();
     }
 }

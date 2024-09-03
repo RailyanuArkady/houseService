@@ -21,6 +21,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -35,6 +36,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "user_id_seq")
     @SequenceGenerator(name = "user_id_seq", allocationSize = 1)
     private Long id;
+
+    @Column(nullable = false)
+    private UUID externalUserId;
 
     @Column(name = "name")
     private String name;
