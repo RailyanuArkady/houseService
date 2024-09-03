@@ -11,7 +11,7 @@ spring:
     show-sql: true
     hibernate:
       dialect: org.hibernate.dialect.PostgreSQLDialect
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         generate_statistics: false
@@ -19,29 +19,21 @@ spring:
 
   #db connect
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
     driver-class-name: org.postgresql.Driver
 
   #redis caching
-  data:
-    redis:
-      host: ${CACHE_HOST}
-      port: ${CACHE_PORT}
-      password: ${CACHE_PASSWORD}
-  cache:
-    type: redis
+#  data:
+#    redis:
+#      host: ${CACHE_HOST}
+#      port: ${CACHE_PORT}
+#      password: ${CACHE_PASSWORD}
+#  cache:
+#    type: redis
 
 #logs
 logging:
   level:
     web: INFO
-
-#server
-server:
-  port: 8082
-
-#app values
-app:
-  enabled: true
