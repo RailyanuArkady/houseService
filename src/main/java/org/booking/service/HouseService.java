@@ -6,21 +6,18 @@ import org.booking.dto.request.RequestHouseDto;
 import org.booking.dto.response.ResponseHouseDto;
 import org.booking.entity.House;
 import org.booking.entity.User;
-import org.booking.mapper.HouseMapper;
 import org.booking.repository.HouseRepository;
 import org.booking.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class HouseService {
 
-    private final HouseMapper houseMapper;
     private final UserRepository userRepository;
     private final HouseRepository houseRepository;
 
@@ -29,33 +26,57 @@ public class HouseService {
     public ResponseHouseDto createHouse(RequestHouseDto requestHouseDto, UUID externalUserId) {
         User user = userRepository.findByExternalUserId(externalUserId).orElseThrow(() ->
                 new IllegalArgumentException("Could not find user with external id: " + externalUserId));
+        House house = House.builder()
+                .externalHouseId(UUID.randomUUID())
+                .address(requestHouseDto.address())
+                .area(requestHouseDto.area())
+                .build();
 
-        House savedHouse = houseRepository.save(houseMapper.fromRequestToHouse(requestHouseDto, user));
-        return houseMapper.toResponseHouseDto(savedHouse);
+        House addedHouse = user.addHouse(house);
+        House savedHouse = houseRepository.save(addedHouse);
+
+        return fromEntityToResponseHouseDto(savedHouse);
     }
 
-    public Optional<House> getHouseById(Long id) {
-        return houseRepository.findById(id);
+    public ResponseHouseDto updateHouseByExternalHouseId(UUID externalHouseId,
+                                                         RequestHouseDto requestHouseDto) {
+
+        House houseToBeUpdated = houseRepository.findByExternalHouseId(externalHouseId)
+                .orElseThrow(() -> new IllegalArgumentException("Could not find house with id: " + externalHouseId));
+
+        House updatedHouse = House.builder()
+                .externalHouseId(externalHouseId)
+                .address(requestHouseDto.address())
+                .area(requestHouseDto.area())
+                .build();
+
+        houseToBeUpdated.setAddress(updatedHouse.getAddress());
+        houseToBeUpdated.setArea(updatedHouse.getArea());
+        houseRepository.save(updatedHouse);
+
+        return fromEntityToResponseHouseDto(updatedHouse);
     }
 
-    public House updateHouseById(Long id, House updatedHouse) {
-        House house = houseRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Could not find house with id: " + id));
-        house.setAddress(updatedHouse.getAddress());
-        house.setArea(updatedHouse.getArea());
-        return houseRepository.save(house);
-    }
-
-    public void deleteHouseById(Long id) {
-        House houseToBeDeleted = houseRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Could not find house with id: " + id));
+    public boolean deleteHouseByExternalHouseId(UUID externalHouseId) {
+        House houseToBeDeleted = houseRepository.findByExternalHouseId(externalHouseId)
+                .orElseThrow(() -> new IllegalArgumentException("Could not find house with id: " + externalHouseId));
         houseRepository.delete(houseToBeDeleted);
+        return true;
     }
 
-    public List<ResponseHouseDto> getAllHouses() {
+    public List<ResponseHouseDto> getAllHousesFilteredByArea() {
         List<House> houses = houseRepository.findAll();
         return houses.stream()
-                .map(houseMapper::toResponseHouseDto)
+                .sorted(Comparator.comparing(House::getArea))
+                .map(this::fromEntityToResponseHouseDto)
                 .toList();
+    }
+
+    private ResponseHouseDto fromEntityToResponseHouseDto(House house) {
+        return new ResponseHouseDto(
+                house.getExternalHouseId(),
+                house.getUser().getExternalUserId(),
+                house.getAddress(),
+                house.getArea());
     }
 }

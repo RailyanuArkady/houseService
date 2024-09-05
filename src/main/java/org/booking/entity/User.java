@@ -1,11 +1,8 @@
 package org.booking.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,7 +30,7 @@ import java.util.UUID;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "user_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_seq")
     @SequenceGenerator(name = "user_id_seq", allocationSize = 1)
     private Long id;
 
@@ -43,7 +40,6 @@ public class User {
     @Column(name = "name")
     private String name;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<House> houses = new ArrayList<>();
 
@@ -52,5 +48,11 @@ public class User {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public House addHouse(House house) {
+        houses.add(house);
+        house.setUser(this);
+        return house;
+    }
 
 }
