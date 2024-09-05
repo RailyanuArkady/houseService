@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.booking.dto.request.RequestHouseDto;
 import org.booking.dto.response.ResponseHouseDto;
-import org.booking.entity.House;
 import org.booking.service.HouseService;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,24 +34,24 @@ public class HouseController {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseHouseDto.class))}))
     @PostMapping("/create")
-    public ResponseHouseDto createHouse(@Parameter(name = "RequestHouseDto", description = "DTO для создания дома")
-                                        @RequestBody RequestHouseDto requestHouseDto,
-                                        @Parameter(name = "externalUserId", description = "Внешний id хозяина дома")
-                                        @RequestParam("externalUserId") UUID externalUserId) {
+    public ResponseHouseDto createHouse(
+            @Parameter(name = "RequestHouseDto", description = "DTO для создания дома")
+            @RequestBody RequestHouseDto requestHouseDto,
+            @Parameter(name = "externalUserId", description = "Внешний id хозяина дома")
+            @RequestParam("externalUserId") UUID externalUserId) {
         return houseService.createHouse(requestHouseDto, externalUserId);
     }
 
     @Operation(summary = "Обновление сущности дома",
             responses = @ApiResponse(responseCode = "200", description = "Успешное обновление дома",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = House.class))}))
+                            schema = @Schema(implementation = ResponseHouseDto.class))}))
     @PostMapping("/update")
-    public ResponseHouseDto updateHouseByExternalId(@Parameter(name = "externalHouseId",
-            description = "внешний ID дома для обновления")
-                                                    @RequestParam("externalHouseId") UUID externalHouseId,
-                                                    @Parameter(name = "requestHouseDto",
-                                                            description = "dto с обновлёнными данными для дома")
-                                                    @RequestBody RequestHouseDto requestHouseDto) {
+    public ResponseHouseDto updateHouseByExternalId(
+            @Parameter(name = "externalHouseId", description = "внешний ID дома для обновления")
+            @RequestParam("externalHouseId") UUID externalHouseId,
+            @Parameter(name = "requestHouseDto", description = "dto с обновлёнными данными для дома")
+            @RequestBody RequestHouseDto requestHouseDto) {
         return houseService.updateHouseByExternalHouseId(externalHouseId, requestHouseDto);
     }
 
@@ -60,17 +59,18 @@ public class HouseController {
             responses = @ApiResponse(responseCode = "200", description = "Успешное получение всех домов",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseHouseDto.class))}))
-
     @GetMapping
     public List<ResponseHouseDto> getAllHousesFilteredByArea() {
         return houseService.getAllHousesFilteredByArea();
     }
 
+    @Operation(summary = "Удаление дома по внешнему ID",
+            responses = @ApiResponse(responseCode = "200", description = "Успешное удаление дома"))
     @DeleteMapping
     public boolean deleteHouseByExternalHouseId(
+            @Parameter(name = "externalHouseId", description = "Внешний ID дома для удаления")
             @RequestParam("externalHouseId") UUID externalHouseId) {
         houseService.deleteHouseByExternalHouseId(externalHouseId);
         return true;
     }
-
 }

@@ -34,7 +34,7 @@ public class User {
     @SequenceGenerator(name = "user_id_seq", allocationSize = 1)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private UUID externalUserId;
 
     @Column(name = "name")
@@ -48,11 +48,4 @@ public class User {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    public House addHouse(House house) {
-        houses.add(house);
-        house.setUser(this);
-        return house;
-    }
-
 }

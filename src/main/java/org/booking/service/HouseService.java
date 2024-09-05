@@ -30,12 +30,9 @@ public class HouseService {
                 .externalHouseId(UUID.randomUUID())
                 .address(requestHouseDto.address())
                 .area(requestHouseDto.area())
+                .user(user)
                 .build();
-
-        House addedHouse = user.addHouse(house);
-        House savedHouse = houseRepository.save(addedHouse);
-
-        return fromEntityToResponseHouseDto(savedHouse);
+        return fromEntityToResponseHouseDto(houseRepository.save(house));
     }
 
     public ResponseHouseDto updateHouseByExternalHouseId(UUID externalHouseId,

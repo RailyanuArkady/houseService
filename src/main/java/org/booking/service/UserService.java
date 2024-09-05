@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -33,10 +34,11 @@ public class UserService {
         return fromEntityToResponseUserDto(savedUser);
     }
 
-    public ResponseUserDto getUserByExternalUserId(UUID externalUserId) {
-        User userToBeShowed = userRepository.findByExternalUserId(externalUserId)
-                .orElseThrow(() -> new IllegalArgumentException("Could not find house with id: " + externalUserId));
-        return fromEntityToResponseUserDto(userToBeShowed);
+    public List<ResponseUserDto> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(this::fromEntityToResponseUserDto)
+                .toList();
     }
 
     private ResponseUserDto fromEntityToResponseUserDto(User user) {
