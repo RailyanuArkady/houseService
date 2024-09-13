@@ -46,6 +46,7 @@ public class HouseService {
 
         House updatedHouse = House.builder()
                 .externalHouseId(externalHouseId)
+                .user(houseToBeUpdated.getUser())
                 .address(requestHouseDto.address())
                 .area(requestHouseDto.area())
                 .build();
