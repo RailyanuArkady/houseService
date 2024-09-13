@@ -7,6 +7,5 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class HouseServiceApp {
     public static void main(String[] args) {
         SpringApplication.run(HouseServiceApp.class, args);
-        System.out.println("Hello world");
     }
 }
